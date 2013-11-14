@@ -1,0 +1,297 @@
+{% extends "base.tmpl" %}
+{% block title %}Search{% endblock %}
+{% block nav_search %}active{% endblock %}
+{% block content %}
+<div>
+  <div class="row">
+  	<h1 class="text-center">Search</h1>
+  </div>
+  <br />
+  <form class="form-horizontal" action="/search" method="post">
+  	<div class="form-group" id="groupTermA">
+  		<div class="col-lg-2 control-label">
+	  		<span class="glyphicon glyphicon-exclamation-sign" data-toggle="tool-tip" title="Must provive at least one term"></span>
+	  		<span class="glyphicon glyphicon-ok-sign"></span>
+	  		<label for="termA">Term A</label>
+  		</div>
+  		<div class="col-lg-10">
+  			<input type="text" class="form-control" id="termA" name="termA" placeholder="Search Term A">
+  		</div>
+  	</div>
+  	<div class="form-group" id="groupOpA">
+  		<div class="col-lg-10 col-offset-2">
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorA" value="AND" checked>
+  				AND
+  			</label>
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorA" value="OR">
+  				OR
+  			</label>
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorA" value="Append">
+  				Append
+  			</label>
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorA" value="NOT">
+  				NOT
+  			</label>
+  		</div>
+  	</div>
+  	<div class="form-group" id="groupTermB">
+  		<div class="col-lg-2 control-label">
+	  		<span class="glyphicon glyphicon-exclamation-sign" data-toggle="tool-tip" title="Invalid character in term"></span>
+	  		<span class="glyphicon glyphicon-ok-sign"></span>
+	  		<label for="termB">Term B</label>
+  		</div>
+  		<div class="col-lg-10">
+  			<input type="text" class="form-control" id="termB" name="termB" placeholder="Search Term B">
+  		</div>
+  	</div>
+  	<div class="form-group" id="groupOpB">
+  		<div class="col-lg-10 col-offset-2">
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorB" value="AND" checked>
+  				AND
+  			</label>
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorB" value="OR">
+  				OR
+  			</label>
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorB" value="Append">
+  				Append
+  			</label>
+  			<label class="radio-inline">
+  				<input type="radio" name="operatorB" value="NOT">
+  				NOT
+  			</label>
+  		</div>
+  	</div>
+  	<div class="form-group" id="groupTermC">
+  		<div class="col-lg-2 control-label">
+	  		<span class="glyphicon glyphicon-exclamation-sign" data-toggle="tool-tip" title="Invalid character in term"></span>
+	  		<span class="glyphicon glyphicon-ok-sign"></span>
+	  		<label for="termC">Term C</label>
+  		</div>
+  		<div class="col-lg-10">
+  			<input type="text" class="form-control" id="termC" name="termC" placeholder="Search Term C">
+  		</div>
+  	</div>
+  	<div class="form-group" id="groupDate">
+  		<div class="col-lg-2 control-label">
+  			<span class="glyphicon glyphicon-exclamation-sign" data-toggle="tool-tip" title="Searches longer than 14 days may run slowly"></span>
+  			<span class="glyphicon glyphicon-ok-sign"></span>
+  			<label>Date Range</label>
+		</div>
+  		<div class="col-lg-5">
+  			<label for="fromDate" class="control-label">From</label>
+  			<input type="date" class="form-control" id="fromDate" name="fromDate" placeholder="From">
+  		</div>
+  		<div class="col-lg-5">
+  			<label for="toDate" class="control-label">To</label>
+  			<input type="date" class="form-control" id="toDate" name="toDate" placeholder="To">
+  		</div>
+  	</div>
+  	<div class="form-group" id="groupPreview">
+  		<div class="col-lg-2 control-label">
+  			<strong>Preview</strong>
+  		</div>
+  		<div class="col-lg-10">
+  			<pre id="previewText">Preview Query</pre>
+  		</div>
+  	</div>
+  	<div class="form-group">
+	  	<div class="col-lg-10 col-offset-2">
+	  		<button type="submit" class="btn btn-primary" id="searchBtn">
+	  			Search&nbsp;&nbsp;<span class="glyphicon glyphicon-search"></span>
+	  		</button>
+	  	</div>
+  	</div>
+  </form>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    $(function(){
+    	// Hide the extra terms by defualt
+    	$("#groupOpA").hide(0);
+    	$("#groupTermB").hide(0);
+    	$("#groupOpB").hide(0);
+    	$("#groupTermC").hide(0);
+    	$(".glyphicon-exclamation-sign").hide(0);
+    	$(".glyphicon-ok-sign").hide(0);
+
+    	$(".glyphicon-exclamation-sign").tooltip();
+
+    	// Set the default dates
+    	var today = new Date();
+    	$("#toDate").val(getDateString(today));
+    	today.setDate(today.getDate() - 7);
+    	$("#fromDate").val(getDateString(today));
+
+    	// Show additional terms
+    	$("#termA").on("input", function(){
+    		if($(this).val() != ""){
+    			$("#groupTermB").show('fast');
+    			$("#groupOpA").show('fast');
+    		}else{
+    			$("#groupTermB").hide('fast');
+    			$("#groupOpA").hide('fast');
+    		}
+    	});
+    	$("#termB").on("input", function(){
+    		if($(this).val() != ""){
+    			$("#groupTermC").show('fast');
+    			$("#groupOpB").show('fast');
+    		}else{
+    			$("#groupTermC").hide('fast');
+    			$("#groupOpB").hide('fast');
+    		}
+    	});
+
+    	$("#fromDate").on("input", validateDate);
+    	$("#toDate").on("input", validateDate);
+    	$("#termA").on("input", validateA);
+    	$("#termB").on("input", validateB);
+    	$("#termC").on("input", validateB);
+    	$("input[type='radio']").on("change", searchStatus);
+
+    	$("#termA").trigger("input");
+    	$("#termB").trigger("input");
+    	$("#termC").trigger("input");
+    	$("#fromDate").trigger("input");
+    	$("#toDate").trigger("input");
+
+    	function validateDate() {
+    		var date = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+    		if(!date.test($(this).val())){
+    			$("#groupDate").addClass('has-error');
+    			$("#groupDate").removeClass('has-warning');
+    			$("#groupDate").removeClass('has-success');
+    			$("#groupDate").children(".control-label").children(".glyphicon-exclamation-sign").show('fast');
+    			$("#groupDate").children(".control-label").children(".glyphicon-ok-sign").hide('fast');
+    			$("#groupDate .control-label .glyphicon-exclamation-sign").attr({"data-original-title":"Dates must be of the form YYYY-MM-DD"});
+    			searchStatus();
+    			return;
+    		}
+
+    		var from = $("#fromDate").val().split("-");
+    		var fromDate = new Date(from[0], from[1]-1, from[2]);
+    		var to = $("#toDate").val().split("-");
+    		var toDate = new Date(to[0], to[1]-1, to[2]);
+    		var dif = (toDate-fromDate)/(1000*60*60*24);
+
+    		if(dif < 1){
+    			$("#groupDate").addClass('has-error');
+    			$("#groupDate").removeClass('has-warning');
+    			$("#groupDate").removeClass('has-success');
+    			$("#groupDate").children(".control-label").children(".glyphicon-exclamation-sign").show('fast');
+    			$("#groupDate").children(".control-label").children(".glyphicon-ok-sign").hide('fast');
+    			$("#groupDate .control-label .glyphicon-exclamation-sign").attr({"data-original-title":"Searches must be at least one day"});
+    		}else if(dif > 14){ 
+    			$("#groupDate").removeClass('has-error');
+    			$("#groupDate").addClass('has-warning');
+    			$("#groupDate").removeClass('has-success');
+    			$("#groupDate").children(".control-label").children(".glyphicon-exclamation-sign").show('fast');
+    			$("#groupDate").children(".control-label").children(".glyphicon-ok-sign").hide('fast');
+    			$("#groupDate .control-label .glyphicon-exclamation-sign").attr({"data-original-title":"Searches longer than 14 days may run poorly"});
+    		}
+    		else{
+    			$("#groupDate").removeClass('has-error');
+    			$("#groupDate").removeClass('has-warning');
+    			$("#groupDate").addClass('has-success');
+    			$("#groupDate").children(".control-label").children(".glyphicon-exclamation-sign").hide('fast');
+    			$("#groupDate").children(".control-label").children(".glyphicon-ok-sign").show('fast');
+    		}
+
+    		searchStatus();
+    	}
+
+    	function validateA() {
+    		if($(this).val() == ""){
+    			$(this).parent().parent().addClass('has-error');
+    			$(this).parent().parent().removeClass('has-success');
+    			$(this).parent().parent().children(".control-label").children(".glyphicon-exclamation-sign").show('fast');
+    			$(this).parent().parent().children(".control-label").children(".glyphicon-ok-sign").hide('fast');
+    		}else{
+    			$(this).parent().parent().removeClass('has-error');
+    			$(this).parent().parent().addClass('has-success');
+    			$(this).parent().parent().children(".control-label").children(".glyphicon-exclamation-sign").hide('fast');
+    			$(this).parent().parent().children(".control-label").children(".glyphicon-ok-sign").show('fast');
+    		}
+    		searchStatus();
+    	}
+
+    	function validateB() {
+    		if($(this).val() == ""){
+    			$(this).parent().parent().removeClass('has-success');
+    			$(this).parent().parent().children(".control-label").children(".glyphicon-ok-sign").hide('fast');
+    		}else{
+    			$(this).parent().parent().addClass('has-success');
+    			$(this).parent().parent().children(".control-label").children(".glyphicon-ok-sign").show('fast');
+    		}
+    		searchStatus();
+    	}
+
+    	function searchStatus(){
+    		updateString();
+    		var groups = $(".form-group");
+    		for(var i=0; i < groups.length; i++){
+    			if($(groups[i]).hasClass('has-error')){
+    				$("#searchBtn").attr({"disabled":"disabled"});
+    				$("#searchBtn").addClass('btn-danger');
+    				$("#searchBtn").removeClass('btn-primary');
+    				$("#searchBtn").removeClass('btn-warning');
+    				return;
+    			}
+    		}
+    		for(var i=0; i < groups.length; i++){
+    			if($(groups[i]).hasClass('has-warning')){
+    				$("#searchBtn").removeAttr("disabled");
+    				$("#searchBtn").removeClass('btn-danger');
+    				$("#searchBtn").removeClass('btn-primary');
+    				$("#searchBtn").addClass('btn-warning');
+    				return;
+    			}
+    		}
+    		$("#searchBtn").removeAttr("disabled");
+    		$("#searchBtn").removeClass('btn-danger');
+			$("#searchBtn").addClass('btn-primary');
+			$("#searchBtn").removeClass('btn-warning');
+    	}
+
+    	function updateString(){
+    		var query = "&nbsp;";
+    		var ta = $("#termA").val();
+    		var tb = $("#termB").val();
+    		var tc = $("#termC").val();
+    		var oa = $("#groupOpA input[type='radio']:checked").val();
+    		if(oa == "Append"){oa = "";}
+    		var ob = $("#groupOpB input[type='radio']:checked").val();
+    		if(ob == "Append"){ob = "";}
+    		if(ta && tb && tc){
+    			query = "("+ta+" "+oa+" "+tb+") "+ob+" "+tc;
+    		}else if(ta && tb){
+    			query = ta+" "+oa+" "+tb;
+    		}else if(ta){
+    			query = ta;
+    		}
+    		$("#previewText").html(query);
+    	}
+    });
+
+    function getDateString(date){
+    	var day = ""+date.getDate();
+    	while(day.length < 2){
+    		day = "0"+day;
+    	}
+    	var month = ""+(date.getMonth()+1);
+    	while(month.length < 2){
+    		month = "0"+month;
+    	}
+    	var year = ""+date.getFullYear();
+    	return year+"-"+month+"-"+day;
+    }
+</script>
+{% endblock %}

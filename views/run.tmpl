@@ -1,0 +1,153 @@
+{% extends "base.tmpl" %}
+{% block title %}Run {{runId}}{% endblock %}
+{% block nav_recent %}{{isRecent}}{% endblock %}
+{% block content %}
+<div>
+  <div class="row">
+  	<h1 class="text-center">Run {{runId}}</h1>
+  </div>
+  <br />
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Progress</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		{% if progress == 100 %}
+	  		<div class="progress progress-striped">
+			  <div class="progress-bar progress-bar-success" id="info-progress" style="width: {{progress}}%"></div>
+			</div>
+		{% else %}
+			<div class="progress progress-striped active">
+			  <div class="progress-bar" id="info-progress" style="width: {{progress}}%"></div>
+			</div>
+		{% endif %}
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Search Criteria</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<pre id="info-search">{{searchCrit}}</pre>
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>From Time</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<p id="info-tstart">{{timeStart}}</p>
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>To Time</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<p id="info-tend">{{timeEnd}}</p>
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Total Records</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<p id="info-total">{{recTwitter + recTumblr + recBlog}}</p>
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Records</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<canvas id="recordChart" width="400" height="400"></canvas>
+  	</div>
+  </div>
+  <br />
+  <div class="row">
+  	<div class="col-lg-10 col-offset-2">
+  		<p class="text-left"><strong><a href="/records?runId={{runId}}">View All Records &rarr;</a></strong></p>
+  	</div>
+  </div>
+</div>
+<br />
+{% endblock %}
+{% block js %}
+<script src="js/Chart.js"></script>
+<script type="text/javascript">
+    $(function(){
+    	var ctx = $("#recordChart").get(0).getContext("2d");
+    	data = [
+    		{
+    			value: {{recTwitter}},
+    			color: "#00ACED",
+    			labelColor : 'white',
+    			labelFontSize : '16',
+        		labelAlign : 'right',
+    			label: 'Twitter'
+    		},
+    		{
+    			value: {{recBlog}},
+    			color: "#FB9240",
+    			labelColor : 'white',
+    			labelFontSize : '16',
+        		labelAlign : 'right',
+    			label: 'Blogs'
+    		},
+    		{
+    			value: {{recTumblr}},
+    			color: "#3D5A70",
+    			labelColor : 'white',
+    			labelFontSize : '16',
+        		labelAlign : 'right',
+    			label: 'Tumblr'
+    		}
+    	];
+    	var recordChart = new Chart(ctx).Pie(data);
+    	updateInfo();
+    });
+
+    function updateInfo() {
+    	$.get('/check?runId={{runId}}', function(data) {
+    		var json = eval(data);
+    		var total = json['recTwitter'] + json['recBlog'] + json['recTumblr']
+    		$('#info-total').text(total);
+    		var ctx = $("#recordChart").get(0).getContext("2d");
+	    	data = [
+	    		{
+	    			value: json['recTwitter'],
+	    			color: "#00ACED",
+	    			labelColor : 'white',
+	    			labelFontSize : '16',
+	        		labelAlign : 'right',
+	    			label: 'Twitter'
+	    		},
+	    		{
+	    			value: json['recBlog'],
+	    			color: "#FB9240",
+	    			labelColor : 'white',
+	    			labelFontSize : '16',
+	        		labelAlign : 'right',
+	    			label: 'Blogs'
+	    		},
+	    		{
+	    			value: json['recTumblr'],
+	    			color: "#3D5A70",
+	    			labelColor : 'white',
+	    			labelFontSize : '16',
+	        		labelAlign : 'right',
+	    			label: 'Tumblr'
+	    		}
+	    	];
+	    	var recordChart = new Chart(ctx).Pie(data, {'animation':false});
+	    	if(json['progress'] >= 100) {
+	    		$('#info-progress').addClass('progress-bar-success');
+	    		$('#info-progress').css('width','100%');
+	    	} else {
+	    		$('#info-progress').css('width',json['progress']+'%');
+	    		setTimeout(updateInfo, 1000);
+	    	}
+    	});
+    }
+ </script>
+{% endblock %}

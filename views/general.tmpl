@@ -1,0 +1,88 @@
+{% extends "base.tmpl" %}
+{% block title %}General{% endblock %}
+{% block nav_general %}active{% endblock %}
+{% block content %}
+<div>
+  <div class="row">
+  	<h1 class="text-center">General</h1>
+  </div>
+  <br />
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Database Status</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<p class="text-{{dbStatus}}"><span class="text-{{dbStatus}} glyphicon glyphicon-{{dbIcon}}-sign"></span> {{dbMessage}}</p>
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Current Run</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		{% if currentRun %}
+  			<a href="/run?runId={{currentRun}}">Run {{currentRun}} &rarr;</a>
+  		{% else %}
+  			<p>No Active Runs</p>
+  		{% endif %}
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Number of Runs</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<p>{{numRuns}}</p>
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-lg-2">
+  		<p class="text-right"><strong>Record Split</strong></p>
+  	</div>
+  	<div class="col-lg-10">
+  		<canvas id="recordChart" width="400" height="400"></canvas>
+  	</div>
+  </div>
+  <br />
+  <div class="row">
+  	<div class="col-lg-10 col-offset-2">
+  		<p class="text-left"><strong><a href="/history">View All Runs &rarr;</a></strong></p>
+  	</div>
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+<script src="js/Chart.js"></script>
+<script type="text/javascript">
+    $(function(){
+    	var ctx = $("#recordChart").get(0).getContext("2d");
+    	data = [
+    		{
+    			value: {{recTwitter}},
+    			color: "#00ACED",
+    			labelColor : 'white',
+    			labelFontSize : '16',
+        		labelAlign : 'right',
+    			label: 'Twitter'
+    		},
+    		{
+    			value: {{recBlog}},
+    			color: "#FB9240",
+    			labelColor : 'white',
+    			labelFontSize : '16',
+        		labelAlign : 'right',
+    			label: 'Blogs'
+    		},
+    		{
+    			value: {{recTumblr}},
+    			color: "#3D5A70",
+    			labelColor : 'white',
+    			labelFontSize : '16',
+        		labelAlign : 'right',
+    			label: 'Tumblr'
+    		}
+    	];
+    	var recordChart = new Chart(ctx).Pie(data);
+    });
+ </script>
+{% endblock %}
