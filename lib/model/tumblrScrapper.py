@@ -9,8 +9,8 @@ class TumblrScrapper(Scrapper):
 	Source_ID = 2
 	search_url = 'https://www.googleapis.com/customsearch/v1'
 
-	API_KEY = "AIzaSyC8g-iu4NfyOlms-ceON4_zUVvwTC8tMMA"
-	CSE_ID = "005545992486166409746:ub08nj02hco"
+	API_KEY = ""
+	CSE_ID = ""
 	FIELDS = "queries(nextPage/startIndex),items(link,displayLink,snippet)"
 
 	def conv_op(self, op):

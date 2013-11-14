@@ -9,11 +9,11 @@ class TwitterScrapper(Scrapper):
 	Source_ID = 1
 	search_url = 'https://api.twitter.com/1.1/search/tweets.json'
 
-	CONSUMER_KEY = "XlUxPBbXo0bmVALJqw5WmQ"
-	CONSUMER_SECRET = "tGFH7GKkbjrfUUxfsHmdECdlZsn2TENYiNwKWTqc"
+	CONSUMER_KEY = ""
+	CONSUMER_SECRET = ""
 
-	OAUTH_TOKEN = "744224750-tRWifUpPbkaVamO9gyTW18LfZBNhxAh4o9LBIRbJ"
-	OAUTH_TOKEN_SECRET = "WpAYs16NyOvqUFedIV2yHRLm2eJjE5ZluXXK2hkpMk"
+	OAUTH_TOKEN = ""
+	OAUTH_TOKEN_SECRET = ""
 
 	def get_oauth(self):
 		return OAuth1(self.CONSUMER_KEY, self.CONSUMER_SECRET, self.OAUTH_TOKEN, self.OAUTH_TOKEN_SECRET)
